@@ -1,0 +1,43 @@
+# =========================
+# Maven / Build output
+# =========================
+/target/
+*.jar
+*.war
+
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# =========================
+# VS Code (if ever used)
+# =========================
+.vscode/
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+
+# =========================
+# Optional future profiles
+# (safe to keep now)
+# =========================
+application-local.properties
+application-prod.properties
+application-dev.properties
