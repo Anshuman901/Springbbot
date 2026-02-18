@@ -33,7 +33,7 @@ pipeline {
                 bat '''
                 docker stop springbbot-app >nul 2>&1
                 docker rm springbbot-app >nul 2>&1
-                docker run -d -p 8080:8080 --name springbbot-app springbbot-app
+                docker run -d -p 8090:8080 --name springbbot-app springbbot-app
                 '''
             }
         }
