@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         IMAGE_NAME = "springbbot-app"
+        BRANCH_NAME_CLEAN = "${env.BRANCH_NAME}".replaceAll("/", "-")
+        IMAGE_TAG = "${BRANCH_NAME_CLEAN}-${env.BUILD_NUMBER}"
     }
 
     stages {
@@ -21,30 +23,44 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t %IMAGE_NAME% .'
+                bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ."
             }
         }
 
-        stage('Run Container (main only)') {
+        stage('Deploy - Dev') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                bat '''
+                docker stop springbbot-dev >nul 2>&1
+                docker rm springbbot-dev >nul 2>&1
+                docker run -d -p 8081:8080 --name springbbot-dev springbbot-app:%BRANCH_NAME%- %BUILD_NUMBER%
+                '''
+            }
+        }
+
+        stage('Deploy - Production') {
             when {
                 branch 'main'
             }
             steps {
                 bat '''
-                docker stop springbbot-app >nul 2>&1
-                docker rm springbbot-app >nul 2>&1
-                docker run -d -p 8090:8080 --name springbbot-app springbbot-app
+                docker stop springbbot-prod >nul 2>&1
+                docker rm springbbot-prod >nul 2>&1
+                docker run -d -p 8090:8080 --name springbbot-prod springbbot-app:%BRANCH_NAME%- %BUILD_NUMBER%
                 '''
             }
         }
+
     }
 
     post {
         success {
-            echo "Build & Deployment Successful"
+            echo " Build & Deployment Successful for ${env.BRANCH_NAME}"
         }
         failure {
-            echo "Build Failed"
+            echo " Build Failed for ${env.BRANCH_NAME}"
         }
     }
 }
