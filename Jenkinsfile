@@ -3,8 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "springbbot-app"
-        BRANCH_NAME_CLEAN = "${env.BRANCH_NAME}".replaceAll("/", "-")
-        IMAGE_TAG = "${BRANCH_NAME_CLEAN}-${env.BUILD_NUMBER}"
+        IMAGE_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
     }
 
     stages {
@@ -35,7 +34,7 @@ pipeline {
                 bat '''
                 docker stop springbbot-dev >nul 2>&1
                 docker rm springbbot-dev >nul 2>&1
-                docker run -d -p 8081:8080 --name springbbot-dev springbbot-app:%BRANCH_NAME%- %BUILD_NUMBER%
+                docker run -d -p 8081:8080 --name springbbot-dev springbbot-app:%IMAGE_TAG%
                 '''
             }
         }
@@ -48,11 +47,10 @@ pipeline {
                 bat '''
                 docker stop springbbot-prod >nul 2>&1
                 docker rm springbbot-prod >nul 2>&1
-                docker run -d -p 8090:8080 --name springbbot-prod springbbot-app:%BRANCH_NAME%- %BUILD_NUMBER%
+                docker run -d -p 8090:8080 --name springbbot-prod springbbot-app:%IMAGE_TAG%
                 '''
             }
         }
-
     }
 
     post {
