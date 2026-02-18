@@ -15,8 +15,7 @@ pipeline {
 
         stage('Build Jar') {
             steps {
-                sh 'chmod +x mvnw'
-                sh './mvnw clean package -DskipTests'
+                bat 'mvnw.cmd clean package -DskipTests'
             }
         }
 
@@ -25,19 +24,19 @@ pipeline {
 
                 stage('Unit Tests') {
                     steps {
-                        sh './mvnw test'
+                        bat 'mvnw.cmd test'
                     }
                 }
 
                 stage('Docker Build') {
                     steps {
-                        sh 'docker build -t $IMAGE_NAME .'
+                        bat 'docker build -t %IMAGE_NAME% .'
                     }
                 }
 
                 stage('Code Info') {
                     steps {
-                        sh 'echo Running additional checks'
+                        bat 'echo Running additional checks'
                     }
                 }
             }
@@ -48,12 +47,13 @@ pipeline {
                 branch 'main'
             }
             steps {
-                sh '''
-                docker stop springbbot-app || true
-                docker rm springbbot-app || true
+                bat '''
+                docker stop springbbot-app || exit 0
+                docker rm springbbot-app || exit 0
                 docker run -d -p 8080:8080 --name springbbot-app springbbot-app
                 '''
             }
         }
     }
 }
+
